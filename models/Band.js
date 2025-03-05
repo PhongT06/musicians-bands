@@ -1,7 +1,16 @@
 const {Sequelize, sequelize} = require('../db');
 
 // TODO - define the Band model
-let Band;
+class Band extends Sequelize.Model {}
+// let Band;
+
+Band.init({
+    name: Sequelize.STRING,
+    genre: Sequelize.STRING,
+}, {
+    sequelize,
+    modelName: 'band'
+});
 
 module.exports = {
     Band
