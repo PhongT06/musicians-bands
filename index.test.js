@@ -102,4 +102,83 @@ describe('Band, Musician, and Song Models', () => {
         });
         await song.destroy();
     })
-})
+
+    // Part 2
+    // One-to-Many Test
+
+    test('Band can have Musicians', async () => {
+        const band = await Band.create({
+            name: 'Blink-182',
+            genre: 'Punk'
+        });
+        await Musician.create({
+            name: 'Mark Hoppus',
+            instrument: 'Bass',
+            bandId: band.id
+        });
+        await Musician.create({
+            name: 'Travis Barker',
+            instrument: 'Drums',
+            bandId: band.id
+        });
+        const bands = await Band.findAll();
+        const musicians = await band.getMusicians();
+        expect(musicians.length).toBe(2);
+    });
+
+    // Many-to-Many Test
+
+    test('Band can have Songs', async () => {
+        const band = await Band.create({
+            name: 'Backstreet Boys',
+            genre: 'Pop'
+        });
+        const song1 = await Song.create({
+            title: 'I Want It That Way',
+            year: 1999,
+            length: 200
+        }); 
+        const song2 = await Song.create({
+            title: 'Everybody', 
+            year: 1997, 
+            length: 210 
+        });
+        await band.addSong(song1);
+        await band.addSong(song2);
+        const songs = await band.getSongs();
+        expect(songs.length).toBe(2);
+    });
+
+    test('Band can have multiple Musicians and Songs', async () => {
+        const band = await Band.create({
+            name: 'Blackpink',
+            genre: 'K-Pop'
+        });
+        await Musician.create({
+            name: 'Jennie Kim',
+            instrument: 'Vocals',
+            bandId: band.id
+        });
+        await Musician.create({
+            name: 'Lisa Manoban',
+            instrument: 'Rap',
+            bandId: band.id
+        });
+        const song1 = await Song.create({
+            title: 'Kill This Love',
+            year: 2019,
+            length: 190
+        });
+        const song2 = await Song.create({
+            title: 'How You Like That',
+            year: 2020,
+            length: 200
+        });
+        await band.addSongs([song1, song2]);
+
+        const musicians = await band.getMusicians();
+        const songs = await band.getSongs();
+        expect(musicians.length).toBe(2);
+        expect(songs.length).toBe(2);
+    });
+});
